@@ -13,6 +13,10 @@ angular.module('portainer.app').controller('TagSelectorController', function() {
 
   this.selectTag = function($item) {
     this.state.selectedValue = '';
+    if ($item.create && this.allowCreate) {
+      this.onCreate($item.value)
+      return;
+    }
     this.onChange(this.model.concat($item.Id));
   };
 
@@ -20,17 +24,12 @@ angular.module('portainer.app').controller('TagSelectorController', function() {
     this.onChange(this.model.filter(id => tag.Id !== id));
   };
 
-  this.addNew = function addNew() {
-    if (this.allowCreate) {
-      this.onCreate(this.state.selectedValue);
-      this.state.selectedValue = '';
-      angular.element('#tags').focus();
+  this.getCurrentTags = function getCurrentTags(searchValue) {
+    const exactTag = this.tags.find(tag => tag.Name === searchValue);
+    const tags = this.tags.filter(tag => !this.model.includes(tag.Id) && tag.Name.toLowerCase().includes(searchValue));
+    if (exactTag || !searchValue) {
+      return tags.slice(0,7);
     }
-  }
-
-  this.filterSelected = filterSelected.bind(this);
-
-  function filterSelected($item) {
-    return !this.model.includes($item.Id);
-  }
+    return tags.slice(0,6).concat({ Name: `Add "${searchValue}"` , create: true, value: searchValue});
+  };
 });
