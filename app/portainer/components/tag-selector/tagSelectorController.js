@@ -1,7 +1,7 @@
 angular.module('portainer.app').controller('TagSelectorController', function() {
-  this.$onChanges = function(changes) {
-    if (changes.model && changes.model.currentValue) {
-      this.state.selectedTags = changes.model.currentValue.map(id => this.tags.find(t => t.Id === id))
+  this.$onChanges = function({ model }) {
+    if (model && model.currentValue) {
+      this.state.selectedTags = model.currentValue.map(id => this.tags.find(t => t.Id === id));
     }
   };
 
@@ -19,6 +19,14 @@ angular.module('portainer.app').controller('TagSelectorController', function() {
   this.removeTag = function removeTag(tag) {
     this.onChange(this.model.filter(id => tag.Id !== id));
   };
+
+  this.addNew = function addNew() {
+    if (this.allowCreate) {
+      this.onCreate(this.state.selectedValue);
+      this.state.selectedValue = '';
+      angular.element('#tags').focus();
+    }
+  }
 
   this.filterSelected = filterSelected.bind(this);
 
